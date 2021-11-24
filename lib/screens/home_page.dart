@@ -1,103 +1,111 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_todo_project/model/item_data.dart';
 import 'package:flutter_todo_project/screens/add_task_page.dart';
 import 'package:flutter_todo_project/widget/bottom_button.dart';
-import 'package:flutter_todo_project/widget/row_widget.dart';
+import 'package:flutter_todo_project/widget/todo_row.dart';
 import 'package:flutter_todo_project/screens/detail_screen.dart';
 
 
 class HomePage extends StatelessWidget {
   HomePage({Key? key}) : super(key: key);
 
-  var todoItems = ['Dart', 'Kotlin', 'Java', 'JavaScript'];
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
-          title: Text('ToDo'),
+          title: Text('ToDoa'),
         ),
-        body: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            _buildBodyContent(),
-            _buildBottomBar(context),
-          ],
+        body: StreamBuilder(
+          stream: _firestore.collection("todos").snapshots(),
+          builder:
+              (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+            List<ItemData> items = [];
+            if (snapshot.hasData) {
+              snapshot.data!.docs.forEach((QueryDocumentSnapshot query) {
+                Map<String, dynamic>? data = query.data() as Map<String, dynamic>?;
+
+                items.add(ItemData(
+                  title: data!['title'],
+                  image: data['image'],
+                  isChecked: data['isChecked'],
+                ));
+              });
+            }
+
+            if (items.isEmpty) {
+              return const Center(
+                child: Text('No todos'),
+              );
+            } else {
+              return Stack(
+                children: [
+                  _buildBodyContent(items),
+                  _buildBottomBar(context),
+                ],
+              );
+            }
+          },
         ),
       ),
     );
   }
 
-  Widget _buildBodyContent() {
-    List<ItemData> items = [
-      ItemData(
-        isChecked: true,
-        image: 'assets/images/dart_image.jpeg',
-        title: 'Dart',
-      ),
-      ItemData(
-        isChecked: true,
-        image: 'assets/images/kotlin_image.jpg',
-        title: 'Kotlin',
-      ),
-      ItemData(
-        isChecked: true,
-        image: 'assets/images/java_image.png',
-        title: 'Java',
-      ),
-      ItemData(
-        isChecked: true,
-        image: 'assets/images/javascript_image.jpg',
-        title: 'JavaScript',
-      ),
-    ];
-
-    return Container(
-      width: double.infinity,
-      height: 560,
+  Widget _buildBodyContent(List<ItemData> items) {
+    return Positioned(
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 0,
       child: ListView.builder(
-          itemCount: items.length,
-          itemBuilder: (context, index) {
-            return GestureDetector(
-              onTap: () async {
-                var result = await Navigator.push(
+        itemCount: items.length,
+        itemBuilder: (context, index) {
+          return GestureDetector(
+            onTap: () async {
+              var result = await Navigator.push(
                   context,
                   MaterialPageRoute(
                     builder: (context) => DetailScreen(
                       itemData: items[index],
                     ),
-                  ),
-                );
+                  ));
 
-                debugPrint('$result');
-              },
-              child: ListTile(
-                title: ToDoRow(
-                  title: items[index].title,
-                ),
+              debugPrint('$result');
+            },
+            child: ListTile(
+              title: ToDoRow(
+                item: items[index],
               ),
-            );
-          }),
+            ),
+          );
+        },
+      ),
     );
   }
 
   Widget _buildBottomBar(BuildContext context) {
-    return BottomButtom(
-        title: 'Add item',
-        onTap: () {
-          showModalBottomSheet<void>(
-            context: context,
-            isScrollControlled: true,
-            builder: (BuildContext context) {
-              return Container(
-                height: 220.0,
-                color: Color(0xff757575),
-                child: AddTaskPage(),
-              );
-            },
-          );
-        }
+    return Positioned(
+      bottom: 0,
+      left: 0,
+      right: 0,
+      child: BottomButton(
+          title: 'Add Item',
+          onTap: () {
+            showModalBottomSheet<void>(
+              context: context,
+              isScrollControlled: true,
+              builder: (BuildContext context) {
+                return Container(
+                  height: 220,
+                  color: Color(0xff757575),
+                  child: AddTaskPage(),
+                );
+              },
+            );
+          }),
     );
   }
 }

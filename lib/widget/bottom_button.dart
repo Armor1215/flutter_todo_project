@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 const kLargeButtonTextStyle =
 TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold, color: Colors.white);
 
-class BottomButtom extends StatelessWidget {
-  BottomButtom({required this.onTap, required this.title});
+class BottomButton extends StatelessWidget {
+  BottomButton({required this.onTap, required this.title});
 
   final Function onTap;
   final String title;
