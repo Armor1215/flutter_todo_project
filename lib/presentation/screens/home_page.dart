@@ -1,16 +1,17 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_todo_project/model/item_data.dart';
-import 'package:flutter_todo_project/screens/add_task_page.dart';
-import 'package:flutter_todo_project/widget/bottom_button.dart';
-import 'package:flutter_todo_project/widget/todo_row.dart';
-import 'package:flutter_todo_project/screens/detail_screen.dart';
+import 'package:flutter_todo_project/domain/model/models.dart';
+import 'package:flutter_todo_project/domain/model/repository/todo_repository.dart';
+import 'package:flutter_todo_project/presentation/screens/add_task_page.dart';
+import 'package:flutter_todo_project/presentation/screens/detail_screen.dart';
+import 'package:flutter_todo_project/presentation/widget/bottom_button.dart';
+import 'package:flutter_todo_project/presentation/widget/todo_row.dart';
+import 'package:provider/provider.dart';
 
 
 class HomePage extends StatelessWidget {
   HomePage({Key? key}) : super(key: key);
 
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   @override
   Widget build(BuildContext context) {
@@ -20,15 +21,18 @@ class HomePage extends StatelessWidget {
           title: Text('ToDoa'),
         ),
         body: StreamBuilder(
-          stream: _firestore.collection("todos").snapshots(),
+          stream: Provider.of<TodoRepository>(context, listen: false)
+              .getTodosStream(),
           builder:
               (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
             List<ItemData> items = [];
             if (snapshot.hasData) {
               snapshot.data!.docs.forEach((QueryDocumentSnapshot query) {
                 Map<String, dynamic>? data = query.data() as Map<String, dynamic>?;
+                var id = query.id;
 
                 items.add(ItemData(
+                  id: id,
                   title: data!['title'],
                   image: data['image'],
                   isChecked: data['isChecked'],
@@ -64,6 +68,7 @@ class HomePage extends StatelessWidget {
         itemCount: items.length,
         itemBuilder: (context, index) {
           return GestureDetector(
+            onLongPress: () {},
             onTap: () async {
               var result = await Navigator.push(
                   context,

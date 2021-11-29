@@ -1,6 +1,7 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_todo_project/widget/rounded_button.dart';
+import 'package:flutter_todo_project/domain/model/repository/todo_repository.dart';
+import 'package:flutter_todo_project/presentation/widget/rounded_button.dart';
+import 'package:provider/provider.dart';
 
 class AddTaskPage extends StatefulWidget {
   @override
@@ -8,14 +9,13 @@ class AddTaskPage extends StatefulWidget {
 }
 
 class _AddTaskPageState extends State<AddTaskPage> {
-  final firestore = FirebaseFirestore.instance;
   var newTitle = '';
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.only(left: 20.0, right: 20.0),
-      decoration: BoxDecoration(
+      padding: const EdgeInsets.only(left: 20.0, right: 20.0),
+      decoration: const BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.only(
           topLeft: Radius.circular(20.0),
@@ -24,10 +24,10 @@ class _AddTaskPageState extends State<AddTaskPage> {
       ),
       child: Column(
         children: <Widget>[
-          SizedBox(
+          const SizedBox(
             height: 20.0,
           ),
-          Text(
+          const Text(
             'Add Task',
             textAlign: TextAlign.center,
             style: TextStyle(
@@ -44,23 +44,19 @@ class _AddTaskPageState extends State<AddTaskPage> {
               });
             },
           ),
-          SizedBox(
+          const SizedBox(
             height: 20.0,
           ),
           RoundedButton(
             title: 'Add',
             onTap: () {
-              firestore.collection('todos').add({
-                'title': newTitle,
-                'image':
-                'https://firebasestorage.googleapis.com/v0/b/todoa-5403a.appspot.com/o/todo.png?alt=media&token=e585808f-3405-4004-9f4a-3fc5ee42fa19',
-                'isChecked': false,
-              });
+              Provider.of<TodoRepository>(context, listen: false)
+                  .addTodo(newTitle);
 
               Navigator.pop(context);
             },
           ),
-          SizedBox(
+          const SizedBox(
             height: 20.0,
           ),
         ],
