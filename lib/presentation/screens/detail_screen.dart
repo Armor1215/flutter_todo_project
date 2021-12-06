@@ -10,25 +10,25 @@ class DetailScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        appBar: AppBar(
-          title: Text(itemData.title),
-        ),
-        body: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            Container(
-              width: 200,
-              height: 200,
-              child: Image.asset(itemData.image),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.pop(context);
-              },
-              child: const Text('Go back'),
-            ),
-          ],
+        body: GestureDetector(
+          onTap: () {
+            Navigator.pop(context, itemData.title);
+          },
+          child: Column(
+            children: [
+              Hero(
+                tag: itemData.id,
+                child: Image.network(
+                  itemData.image,
+                  width: double.infinity,
+                  height: 350,
+                ),
+              ),
+              Center(
+                child: Text(itemData.title),
+              ),
+            ],
+          ),
         ),
       ),
     );

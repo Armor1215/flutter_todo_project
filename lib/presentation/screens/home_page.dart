@@ -12,6 +12,8 @@ import 'package:provider/provider.dart';
 class HomePage extends StatelessWidget {
   HomePage({Key? key}) : super(key: key);
 
+  get itemData => null;
+
 
   @override
   Widget build(BuildContext context) {
@@ -68,7 +70,11 @@ class HomePage extends StatelessWidget {
         itemCount: items.length,
         itemBuilder: (context, index) {
           return GestureDetector(
-            onLongPress: () {},
+            onLongPress: () {
+              setState(() {
+                itemData.removeAt(index);
+              });
+            },
             onTap: () async {
               var result = await Navigator.push(
                   context,
@@ -113,4 +119,6 @@ class HomePage extends StatelessWidget {
           }),
     );
   }
+
+  void setState(Null Function() param0) {}
 }

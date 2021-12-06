@@ -22,10 +22,13 @@ class ToDoRow extends StatelessWidget {
                  .updateTodo(item.id, isSelected!);
           },
         ),
-        Image.network(
-          item.image,
-          width: 35,
-          height: 35,
+        Hero(
+          tag: item.id,
+          child: Image.network(
+            item.image,
+            width: 35,
+            height: 35,
+          ),
         ),
         Flexible(
           child: Container(
